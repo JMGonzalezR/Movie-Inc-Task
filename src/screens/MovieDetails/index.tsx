@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    FlatList,
+    ScrollView,
+} from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { fetchMovieDetails } from "../../api";
@@ -56,6 +63,26 @@ const MovieDetails = ({ route }: MovieDetailsProps) => {
         credits,
     } = movieDetails;
 
+    const castItem = ({
+        item,
+    }: {
+        item: MovieDetails["credits"]["cast"][0];
+    }) => (
+        <View key={item.id} style={styles.castMember}>
+            <Image
+                source={{
+                    uri: `https://image.tmdb.org/t/p/w500/${item.profile_path}`,
+                }}
+                style={styles.castMemberImage}
+                resizeMode="cover"
+            />
+            <View style={styles.castMemberInfo}>
+                <Text style={styles.castMemberName}>{item.name}</Text>
+                <Text style={styles.castMemberCharacter}>{item.character}</Text>
+            </View>
+        </View>
+    );
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -80,25 +107,9 @@ const MovieDetails = ({ route }: MovieDetailsProps) => {
             </View>
             <View style={styles.cast}>
                 <Text style={styles.castTitle}>Cast</Text>
-                {credits.cast.slice(0, 10).map((castMember) => (
-                    <View key={castMember.id} style={styles.castMember}>
-                        <Image
-                            source={{
-                                uri: `https://image.tmdb.org/t/p/w500/${castMember.profile_path}`,
-                            }}
-                            style={styles.castMemberImage}
-                            resizeMode="cover"
-                        />
-                        <View style={styles.castMemberInfo}>
-                            <Text style={styles.castMemberName}>
-                                {castMember.name}
-                            </Text>
-                            <Text style={styles.castMemberCharacter}>
-                                {castMember.character}
-                            </Text>
-                        </View>
-                    </View>
-                ))}
+                <ScrollView>
+                    {credits.cast.map((item) => castItem({ item }))}
+                </ScrollView>
             </View>
         </View>
     );
@@ -146,6 +157,7 @@ const styles = StyleSheet.create({
     },
     cast: {
         padding: 16,
+        flex: 1,
     },
     castTitle: {
         fontSize: 18,
@@ -173,6 +185,9 @@ const styles = StyleSheet.create({
     castMemberCharacter: {
         fontSize: 14,
         color: "#888",
+    },
+    listContentContainer: {
+        paddingBottom: 80,
     },
 });
 

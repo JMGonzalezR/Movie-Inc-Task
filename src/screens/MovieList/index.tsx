@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, Text, View, Image, StyleSheet } from "react-native";
+import {
+    FlatList,
+    Text,
+    View,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+} from "react-native";
 import { fetchMovies } from "../../api";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 interface Movie {
     id: number;
@@ -9,8 +17,11 @@ interface Movie {
     poster_path: string;
     vote_average: number;
 }
+interface MovieListProps {
+    navigation: StackNavigationProp<any>;
+}
 
-const MovieList = () => {
+const MovieList = ({ navigation }: MovieListProps) => {
     const [movies, setMovies] = useState<Movie[]>([]);
 
     useEffect(() => {
@@ -22,21 +33,25 @@ const MovieList = () => {
     }, []);
 
     const renderItem = ({ item }: { item: Movie }) => (
-        <View style={styles.movieContainer}>
-            <Image
-                source={{
-                    uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                }}
-                style={styles.posterImage}
-            />
-            <View style={styles.movieDetailsContainer}>
-                <Text style={styles.movieTitle}>{item.title}</Text>
-                <Text style={styles.releaseDate}>{item.release_date}</Text>
-                <Text
-                    style={styles.voteAverage}
-                >{`Average Rating: ${item.vote_average}`}</Text>
+        <TouchableOpacity
+            onPress={() => navigation.navigate("MovieDetails", { id: item.id })}
+        >
+            <View style={styles.movieContainer}>
+                <Image
+                    source={{
+                        uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                    }}
+                    style={styles.posterImage}
+                />
+                <View style={styles.movieDetailsContainer}>
+                    <Text style={styles.movieTitle}>{item.title}</Text>
+                    <Text style={styles.releaseDate}>{item.release_date}</Text>
+                    <Text
+                        style={styles.voteAverage}
+                    >{`Average Rating: ${item.vote_average}`}</Text>
+                </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
