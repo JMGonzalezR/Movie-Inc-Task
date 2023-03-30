@@ -30,6 +30,11 @@ interface MovieDetails {
     };
 }
 
+interface Rating {
+    movieId: number;
+    value: number;
+}
+
 export const fetchMovies = async (): Promise<Movie[]> => {
     const response = await axios.get(
         `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`
@@ -77,6 +82,22 @@ export const fetchMovieDetails = async (movieId: number) => {
         return movieDetails;
     } catch (error) {
         console.error(`Error fetching movie details: ${error}`);
+        throw error;
+    }
+};
+
+export const rateMovie = async (rating: Rating) => {
+    try {
+        const response = await axios.post(
+            `https://api.themoviedb.org/3/movie/${rating.movieId}/rating?api_key=${API_KEY}`,
+            {
+                value: rating.value,
+            }
+        );
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.error(`Error rating movie: ${error}`);
         throw error;
     }
 };
