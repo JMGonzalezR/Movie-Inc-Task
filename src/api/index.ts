@@ -109,3 +109,19 @@ export async function createGuestSession() {
     );
     return response.data.guest_session_id;
 }
+
+export const getMovieRatingByCurrentUser = async (
+    movieId: number,
+    guestSessionId: string
+) => {
+    try {
+        const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}/account_states?api_key=${API_KEY}&guest_session_id=${guestSessionId}`
+        );
+        const data = response.data;
+        return data.rated?.value || null;
+    } catch (error) {
+        console.error(`Error fetching movie rating: ${error}`);
+        throw error;
+    }
+};
