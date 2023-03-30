@@ -33,6 +33,7 @@ interface MovieDetails {
 interface Rating {
     movieId: number;
     value: number;
+    guestSessionId: string | null;
 }
 
 export const fetchMovies = async (): Promise<Movie[]> => {
@@ -89,7 +90,7 @@ export const fetchMovieDetails = async (movieId: number) => {
 export const rateMovie = async (rating: Rating) => {
     try {
         const response = await axios.post(
-            `https://api.themoviedb.org/3/movie/${rating.movieId}/rating?api_key=${API_KEY}`,
+            `https://api.themoviedb.org/3/movie/${rating.movieId}/rating?api_key=${API_KEY}&guest_session_id=${rating.guestSessionId}`,
             {
                 value: rating.value,
             }
@@ -101,3 +102,10 @@ export const rateMovie = async (rating: Rating) => {
         throw error;
     }
 };
+
+export async function createGuestSession() {
+    const response = await axios.get(
+        `https://api.themoviedb.org/3/authentication/guest_session/new?api_key=${API_KEY}`
+    );
+    return response.data.guest_session_id;
+}

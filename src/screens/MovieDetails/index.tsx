@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    FlatList,
-    ScrollView,
-} from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { fetchMovieDetails, rateMovie } from "../../api";
 import { RootStackParamList } from "../../navigation";
 import { Rating } from "react-native-ratings";
+import { GuestSessionContext } from "../../providers/GuestSessionProvider";
 
 interface MovieDetailsProps {
     navigation: StackNavigationProp<any>;
@@ -40,6 +34,7 @@ interface MovieDetails {
 
 const MovieDetails = ({ route }: MovieDetailsProps) => {
     const { id } = route.params;
+    const { guestSessionId } = useContext(GuestSessionContext);
     const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
     const [rating, setRating] = useState(0);
 
@@ -52,7 +47,9 @@ const MovieDetails = ({ route }: MovieDetailsProps) => {
     }, []);
 
     const handleRateMovie = (rating: number) => {
-        rateMovie({ movieId: id, value: rating }).then(() => setRating(rating));
+        rateMovie({ movieId: id, value: rating, guestSessionId }).then(() =>
+            setRating(rating)
+        );
     };
 
     if (!movieDetails) {
