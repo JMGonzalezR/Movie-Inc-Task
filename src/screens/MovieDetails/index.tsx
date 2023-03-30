@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
-import { fetchMovieDetails } from "../../api";
+import { fetchMovieDetails, rateMovie } from "../../api";
 import { RootStackParamList } from "../../navigation";
+import { Rating } from "react-native-ratings";
 
 interface MovieDetailsProps {
     navigation: StackNavigationProp<any>;
@@ -40,6 +41,7 @@ interface MovieDetails {
 const MovieDetails = ({ route }: MovieDetailsProps) => {
     const { id } = route.params;
     const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+    const [rating, setRating] = useState(0);
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -48,6 +50,10 @@ const MovieDetails = ({ route }: MovieDetailsProps) => {
         };
         fetchMovie();
     }, []);
+
+    const handleRateMovie = (rating: number) => {
+        rateMovie({ movieId: id, value: rating }).then(() => setRating(rating));
+    };
 
     if (!movieDetails) {
         return null; // or a loading indicator
@@ -100,6 +106,10 @@ const MovieDetails = ({ route }: MovieDetailsProps) => {
                         {genres.map((genre) => genre.name).join(", ")}
                     </Text>
                     <Text style={styles.info}>{vote_average} / 10</Text>
+                    <Rating
+                        startingValue={rating}
+                        onFinishRating={handleRateMovie}
+                    />
                 </View>
             </View>
             <View style={styles.description}>
